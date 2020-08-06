@@ -1,12 +1,9 @@
 <idea-plugin>
-    <id>org.example.untitled1</id>
-    <name>Plugin display name here</name>
-    <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+    <id>org.code.wars</id>
+    <name>Codewars</name>
+    <vendor email="akovalchuk@gmail.comm" url="http://github.com/koval4uk">Artur Kovalchuk</vendor>
 
-    <description><![CDATA[
-    Enter short description for your plugin here.<br>
-    <em>most HTML tags may be used</em>
-    ]]></description>
+    <description>My first idea plugin. My first idea plugin. My first idea plugin.</description>
 
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
@@ -14,9 +11,12 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
+        <httpRequestHandler implementation="org.code.wars.KeyboardTypeListener"/>
     </extensions>
 
     <actions>
         <!-- Add your actions here -->
+        <action id="MyIdea.Demo" class="org.code.wars.MyDemoAction"/>
+<!--        <action id="MyIdea.Demo" class="com.intellij.openapi.vcs.changes.patch.ApplyPatchFromClipboardAction"/>-->
     </actions>
 </idea-plugin>
