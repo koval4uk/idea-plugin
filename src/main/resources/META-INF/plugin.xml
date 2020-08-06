@@ -11,7 +11,7 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
-        <httpRequestHandler implementation="org.code.wars.KeyboardTypeListener"/>
+        <httpRequestHandler implementation="org.code.wars.ApplyPatchService"/>
     </extensions>
 
     <actions>
