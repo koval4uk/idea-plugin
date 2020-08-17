@@ -16,6 +16,11 @@ import org.jetbrains.ide.RestService;
 
 public class ApplyPatchService extends RestService {
 
+  @Override
+  public boolean isSupported(@NotNull FullHttpRequest request) {
+    return true;
+  }
+
   @NotNull
   @Override
   protected String getServiceName() {
@@ -24,26 +29,18 @@ public class ApplyPatchService extends RestService {
 
   @Override
   protected boolean isMethodSupported(@NotNull HttpMethod httpMethod) {
-    return httpMethod == HttpMethod.GET;
+    return httpMethod == HttpMethod.POST;
   }
 
   @Nullable
   @Override
   public String execute(@NotNull QueryStringDecoder queryStringDecoder, @NotNull FullHttpRequest fullHttpRequest,
                         @NotNull ChannelHandlerContext channelHandlerContext) {
-
+    System.setProperty("idea.trusted.chrome.extension.id", "inicfikfgahabbmboppkmgopiiapdnjn");
     // may be use ProjectManager
     Project project = getLastFocusedOrOpenedProject();
 
     if (project != null) {
-
-      // todo test dialog windows
-      ApplicationManager.getApplication().invokeLater(
-          () -> Messages.showMessageDialog("Test", "Test", null),
-          ModalityState.any());
-
-      // todo test create patch
-
       ApplicationManager.getApplication().invokeLater(
           () -> new ApplyPatchFromClipboardAction.MyApplyPatchFromClipboardDialog(project, "Index: src/Test.java\n" +
                                                                                            "IDEA additional info:\n" +
