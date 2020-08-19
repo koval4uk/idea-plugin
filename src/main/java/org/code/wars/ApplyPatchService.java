@@ -22,6 +22,7 @@ public class ApplyPatchService extends RestService {
   private static final String CLASS_PREFIX = "public class ";
   private static final String SPACE = " ";
   private static final String CLASS_KEY_IN_JSON = "setup";
+  private static final String CLASS_TEST_KEY_IN_JSON = "exampleFixture";
 
   static {
     System.setProperty("idea.trusted.chrome.extension.id", "inicfikfgahabbmboppkmgopiiapdnjn");
@@ -50,7 +51,7 @@ public class ApplyPatchService extends RestService {
     final JsonObject jsonObject = JsonParser.parseReader(createJsonReader(fullHttpRequest))
             .getAsJsonObject();
 
-    String jsonTestClass = prepareJson(jsonObject, "exampleFixture");
+    String jsonTestClass = prepareJson(jsonObject, CLASS_TEST_KEY_IN_JSON);
     String jsonClass = prepareJson(jsonObject, CLASS_KEY_IN_JSON);
 
     // may be use ProjectManager
