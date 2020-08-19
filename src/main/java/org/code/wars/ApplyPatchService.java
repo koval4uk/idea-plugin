@@ -53,16 +53,8 @@ public class ApplyPatchService extends RestService {
                         @NotNull ChannelHandlerContext channelHandlerContext) {
     final JsonObject jsonObject = new JsonParser().parse(createJsonReader(fullHttpRequest)).getAsJsonObject();
 
-    String setup = jsonObject.get(CLASS_KEY_IN_JSON).toString()
-            .replace(BACK_SLASH_REGEX, "")
-            .replace(TAB_REGEX, "    ")
-            .replace(NEW_LINE_REGEX, "\n+");
-
-    ApplicationManager.getApplication().invokeLater(
-            () -> Messages.showMessageDialog(setup, "Json Class", null),
-            ModalityState.any());
-
-    String className = getClassName(setup);
+    String jsonTestClass = prepareJson(jsonObject, "exampleFixture");
+    String jsonClass = prepareJson(jsonObject, CLASS_KEY_IN_JSON);
 
     // may be use ProjectManager
     Project project = getLastFocusedOrOpenedProject();
@@ -70,16 +62,8 @@ public class ApplyPatchService extends RestService {
     if (project != null) {
       ApplicationManager.getApplication().invokeLater(
               () -> {
-                long epochMilli = Instant.now().toEpochMilli();
-                new ApplyPatchFromClipboardAction.MyApplyPatchFromClipboardDialog(project, "Index: src/Test.java\n" +
-                        "IDEA additional info:\n" +
-                        "Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP\n" +
-                        "<+>UTF-8\n" +
-                        "===================================================================\n" +
-                        "--- src/" + className + ".java\t(date " + epochMilli + ")\n" +
-                        "+++ src/" + className + ".java\t(date " + epochMilli + ")\n" +
-                        "@@ -0,0 +1,100 @@\n" +
-                        "+" + setup).show();
+                String clipboardText = getClipboardText(jsonClass) + "\n" +getClipboardText(jsonTestClass);
+                new ApplyPatchFromClipboardAction.MyApplyPatchFromClipboardDialog(project, clipboardText).show();
               },
               ModalityState.any());
 
@@ -88,6 +72,29 @@ public class ApplyPatchService extends RestService {
     }
 
     return "No open project";
+  }
+
+  @NotNull
+  private String getClipboardText(String jsonClass) {
+    String className = getClassName(jsonClass);
+    long epochMilli = Instant.now().toEpochMilli();
+
+    return  "IDEA additional info:\n" +
+            "Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP\n" +
+            "<+>UTF-8\n" +
+            "===================================================================\n" +
+            "--- src/" + className + ".java\t(date " + epochMilli + ")\n" +
+            "+++ src/" + className + ".java\t(date " + epochMilli + ")\n" +
+            "@@ -0,0 +1,100 @@\n" +
+            "+" + jsonClass;
+  }
+
+  @NotNull
+  private String prepareJson(JsonObject jsonObject, String jsonElement) {
+    return jsonObject.get(jsonElement).toString()
+            .replace(BACK_SLASH_REGEX, "")
+            .replace(TAB_REGEX, "    ")
+            .replace(NEW_LINE_REGEX, "\n+");
   }
 
   private String getClassName(String setup) {
