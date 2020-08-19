@@ -22,9 +22,6 @@ public class ApplyPatchService extends RestService {
 
   private static final String CLASS_PREFIX = "public class ";
   private static final String SPACE = " ";
-  private static final String TAB_REGEX = "\\t";
-  private static final String NEW_LINE_REGEX = "\\n";
-  private static final String BACK_SLASH_REGEX = "\"";
   private static final String CLASS_KEY_IN_JSON = "setup";
 
   static {
@@ -55,6 +52,10 @@ public class ApplyPatchService extends RestService {
 
     String jsonTestClass = prepareJson(jsonObject, "exampleFixture");
     String jsonClass = prepareJson(jsonObject, CLASS_KEY_IN_JSON);
+
+    ApplicationManager.getApplication().invokeLater(
+            () -> Messages.showMessageDialog(jsonTestClass, "Json Class", null),
+            ModalityState.any());
 
     // may be use ProjectManager
     Project project = getLastFocusedOrOpenedProject();
@@ -91,10 +92,8 @@ public class ApplyPatchService extends RestService {
 
   @NotNull
   private String prepareJson(JsonObject jsonObject, String jsonElement) {
-    return jsonObject.get(jsonElement).toString()
-            .replace(BACK_SLASH_REGEX, "")
-            .replace(TAB_REGEX, "    ")
-            .replace(NEW_LINE_REGEX, "\n+");
+    return jsonObject.get(jsonElement).getAsString()
+            .replace("\n", "\n ");
   }
 
   private String getClassName(String setup) {
