@@ -15,6 +15,10 @@ import org.jetbrains.ide.RestService;
 
 public class ApplyPatchService extends RestService {
 
+    static {
+        System.setProperty("idea.trusted.chrome.extension.id", "inicfikfgahabbmboppkmgopiiapdnjn");
+    }
+
     @Override
     public boolean isSupported(@NotNull FullHttpRequest request) {
         return true;
