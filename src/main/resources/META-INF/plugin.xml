@@ -14,10 +14,4 @@
         <httpRequestHandler implementation="org.code.wars.ApplyPatchService"/>
     </extensions>
 
-    <actions>
-        <!-- Add your actions here -->
-        <action id="MyIdea.Demo" class="org.code.wars.MyDemoAction"/>
-<!--        <action id="MyIdea.Demo" class="com.intellij.openapi.vcs.changes.patch.ApplyPatchFromClipboardAction"/>-->
-    </actions>
-
 </idea-plugin>
