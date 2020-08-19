@@ -1,5 +1,7 @@
 package org.code.wars;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
@@ -39,6 +41,18 @@ public class ApplyPatchService extends RestService {
   @Override
   public String execute(@NotNull QueryStringDecoder queryStringDecoder, @NotNull FullHttpRequest fullHttpRequest,
                         @NotNull ChannelHandlerContext channelHandlerContext) {
+    final JsonObject jsonObject = new JsonParser().parse(createJsonReader(fullHttpRequest)).getAsJsonObject();
+
+    String setup = jsonObject.get("setup").toString()
+            .replace("\"", "")
+            .replace("\\t", "    ")
+            .replace("\\n", "\n+");
+
+//    ApplicationManager.getApplication().invokeLater(
+//            () -> Messages.showMessageDialog(setup, "Json Class", null),
+//            ModalityState.any());
+
+
     // may be use ProjectManager
     Project project = getLastFocusedOrOpenedProject();
 
@@ -51,9 +65,8 @@ public class ApplyPatchService extends RestService {
                       "===================================================================\n" +
                       "--- src/Test.java\t(date 1596695162128)\n" +
                       "+++ src/Test.java\t(date 1596695162128)\n" +
-                      "@@ -0,0 +1,2 @@\n" +
-                      "+public class Test {\n" +
-                      "+}\n").show(),
+                      "@@ -0,0 +1,100 @@\n" +
+                      "+" + setup).show(),
               ModalityState.any());
 
       sendOk(fullHttpRequest, channelHandlerContext);
