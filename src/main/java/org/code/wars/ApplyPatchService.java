@@ -5,6 +5,7 @@ import com.google.gson.JsonParser;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vcs.changes.patch.ApplyPatchFromClipboardAction;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
@@ -50,10 +51,11 @@ public class ApplyPatchService extends RestService {
             .replace("\\t", "    ")
             .replace("\\n", "\n+");
 
-//    ApplicationManager.getApplication().invokeLater(
-//            () -> Messages.showMessageDialog(setup, "Json Class", null),
-//            ModalityState.any());
+    ApplicationManager.getApplication().invokeLater(
+            () -> Messages.showMessageDialog(setup, "Json Class", null),
+            ModalityState.any());
 
+    String className = getClassName(setup);
 
     // may be use ProjectManager
     Project project = getLastFocusedOrOpenedProject();
@@ -67,8 +69,8 @@ public class ApplyPatchService extends RestService {
                         "Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP\n" +
                         "<+>UTF-8\n" +
                         "===================================================================\n" +
-                        "--- src/Test.java\t(date " + epochMilli + ")\n" +
-                        "+++ src/Test.java\t(date " + epochMilli + ")\n" +
+                        "--- src/" + className + ".java\t(date " + epochMilli + ")\n" +
+                        "+++ src/" + className + ".java\t(date " + epochMilli + ")\n" +
                         "@@ -0,0 +1,100 @@\n" +
                         "+" + setup).show();
               },
@@ -79,6 +81,11 @@ public class ApplyPatchService extends RestService {
     }
 
     return "No open project";
+  }
+
+  private String getClassName(String setup) {
+    return setup.split("public class ")[1]
+            .split(" ")[0];
   }
 
   @Override
