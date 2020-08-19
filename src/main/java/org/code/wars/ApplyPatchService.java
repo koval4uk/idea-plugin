@@ -2,6 +2,7 @@ package org.code.wars;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
@@ -19,7 +20,7 @@ import java.time.Instant;
 
 public class ApplyPatchService extends RestService {
 
-  private static final String CLASS_PREFIX = "public class ";
+  private static final String CLASS_PREFIX = "class ";
   private static final String SPACE = " ";
   private static final String CLASS_KEY_IN_JSON = "setup";
   private static final String CLASS_TEST_KEY_IN_JSON = "exampleFixture";
@@ -48,21 +49,20 @@ public class ApplyPatchService extends RestService {
   @Override
   public String execute(@NotNull QueryStringDecoder queryStringDecoder, @NotNull FullHttpRequest fullHttpRequest,
                         @NotNull ChannelHandlerContext channelHandlerContext) {
-    final JsonObject jsonObject = JsonParser.parseReader(createJsonReader(fullHttpRequest))
-            .getAsJsonObject();
 
+    JsonReader jsonReader = createJsonReader(fullHttpRequest);
+    JsonObject jsonObject = JsonParser.parseReader(jsonReader).getAsJsonObject();
     String jsonTestClass = prepareJson(jsonObject, CLASS_TEST_KEY_IN_JSON);
     String jsonClass = prepareJson(jsonObject, CLASS_KEY_IN_JSON);
 
     // may be use ProjectManager
     Project project = getLastFocusedOrOpenedProject();
 
+    String clipboardText = getClipboardText(jsonClass) + "\n" + getClipboardText(jsonTestClass);
+
     if (project != null) {
       ApplicationManager.getApplication().invokeLater(
-              () -> {
-                String clipboardText = getClipboardText(jsonClass) + "\n" +getClipboardText(jsonTestClass);
-                new ApplyPatchFromClipboardAction.MyApplyPatchFromClipboardDialog(project, clipboardText).show();
-              },
+              () -> new ApplyPatchFromClipboardAction.MyApplyPatchFromClipboardDialog(project, clipboardText).show(),
               ModalityState.any());
 
       sendOk(fullHttpRequest, channelHandlerContext);
@@ -74,10 +74,10 @@ public class ApplyPatchService extends RestService {
 
   @NotNull
   private String getClipboardText(String jsonClass) {
-    String className = getClassName(jsonClass);
+    String className = getClassName(jsonClass).trim();
     long epochMilli = Instant.now().toEpochMilli();
 
-    return  "IDEA additional info:\n" +
+    return "IDEA additional info:\n" +
             "Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP\n" +
             "<+>UTF-8\n" +
             "===================================================================\n" +
