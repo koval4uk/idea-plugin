@@ -5,7 +5,6 @@ import com.google.gson.JsonParser;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vcs.changes.patch.ApplyPatchFromClipboardAction;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
@@ -48,7 +47,8 @@ public class ApplyPatchService extends RestService {
   @Override
   public String execute(@NotNull QueryStringDecoder queryStringDecoder, @NotNull FullHttpRequest fullHttpRequest,
                         @NotNull ChannelHandlerContext channelHandlerContext) {
-    final JsonObject jsonObject = new JsonParser().parse(createJsonReader(fullHttpRequest)).getAsJsonObject();
+    final JsonObject jsonObject = JsonParser.parseReader(createJsonReader(fullHttpRequest))
+            .getAsJsonObject();
 
     String jsonTestClass = prepareJson(jsonObject, "exampleFixture");
     String jsonClass = prepareJson(jsonObject, CLASS_KEY_IN_JSON);
