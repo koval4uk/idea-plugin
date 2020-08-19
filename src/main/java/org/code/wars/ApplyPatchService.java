@@ -14,6 +14,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.ide.RestService;
 
+import java.time.Instant;
+
 
 public class ApplyPatchService extends RestService {
 
@@ -58,15 +60,18 @@ public class ApplyPatchService extends RestService {
 
     if (project != null) {
       ApplicationManager.getApplication().invokeLater(
-              () -> new ApplyPatchFromClipboardAction.MyApplyPatchFromClipboardDialog(project, "Index: src/Test.java\n" +
-                      "IDEA additional info:\n" +
-                      "Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP\n" +
-                      "<+>UTF-8\n" +
-                      "===================================================================\n" +
-                      "--- src/Test.java\t(date 1596695162128)\n" +
-                      "+++ src/Test.java\t(date 1596695162128)\n" +
-                      "@@ -0,0 +1,100 @@\n" +
-                      "+" + setup).show(),
+              () -> {
+                long epochMilli = Instant.now().toEpochMilli();
+                new ApplyPatchFromClipboardAction.MyApplyPatchFromClipboardDialog(project, "Index: src/Test.java\n" +
+                        "IDEA additional info:\n" +
+                        "Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP\n" +
+                        "<+>UTF-8\n" +
+                        "===================================================================\n" +
+                        "--- src/Test.java\t(date " + epochMilli + ")\n" +
+                        "+++ src/Test.java\t(date " + epochMilli + ")\n" +
+                        "@@ -0,0 +1,100 @@\n" +
+                        "+" + setup).show();
+              },
               ModalityState.any());
 
       sendOk(fullHttpRequest, channelHandlerContext);
