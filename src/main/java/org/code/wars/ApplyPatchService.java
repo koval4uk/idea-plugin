@@ -53,10 +53,6 @@ public class ApplyPatchService extends RestService {
     String jsonTestClass = prepareJson(jsonObject, "exampleFixture");
     String jsonClass = prepareJson(jsonObject, CLASS_KEY_IN_JSON);
 
-    ApplicationManager.getApplication().invokeLater(
-            () -> Messages.showMessageDialog(jsonTestClass, "Json Class", null),
-            ModalityState.any());
-
     // may be use ProjectManager
     Project project = getLastFocusedOrOpenedProject();
 
